@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "build": "parcel build -d wwwroot/dist --public-url /dist/ Frontend/index.js",
+    "watch": "parcel watch -d wwwroot/dist --public-url /dist/ --https Frontend/index.js"
+  },
+  "dependencies": {
+    "parcel": "^1.12.4"
+  },
+  "devDependencies": {
+    "sass": "^1.23.7"
+  }
+}

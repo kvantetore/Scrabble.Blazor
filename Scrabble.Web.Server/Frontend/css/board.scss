@@ -1,11 +1,11 @@
 .board {
+    &:focus {
+        outline: none;
+    }
+
     display: grid;
     grid-template-columns: repeat(15, 3em);
     grid-template-rows: repeat(15, 3em);
-}
-
-.board:focus {
-    outline: none;
 }
 
 .board--row {
@@ -55,4 +55,16 @@
     font-size: 1.5rem;
     line-height: 2rem;
     text-align: center;
+}
+
+.game-area {
+    display: flex;
+}
+
+.game-area--board {
+
+}
+
+.game-area--action {
+    
 }
