@@ -1,5 +1,84 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+<h1>Scrabble</h1>
 
-Welcome to your new app.
+<div>
+    Score: @GetCurrentScore()
+</div>
+
+<div>
+    Words:
+    <ul>
+        @foreach (var word in GetCurrentWords())
+        {
+            <li>@(string.Join("", word.Select(t => t.CurrentLetter)))</li>
+        }
+    </ul>
+
+</div>
+
+<div>
+    @foreach (var player in Players)
+    {
+        <button type="button" @onclick="@(() => ScoreTiles(player))">Score for @player.Name</button>
+    }
+</div>
+
+<div class="board" tabindex="0" @onkeydown="@OnKeyDown" @onkeypress="@OnKeyPress">
+    @for (var i = 0; i < Tiles.GetLength(0); i++) 
+    {
+        <div class="board--row">
+            @for (var j = 0; j < Tiles.GetLength(1); j++)
+            {
+                var (k, l) = (i, j);
+                var tile = Tiles[k, l];
+
+                <div class="board--cell @GetTileTypeCssClass(tile.TileType) @GetSelectedCssClass(k, l)" @onclick="@(() => OnTileClick(k, l))">
+                    @if (IsFilled(tile)) {
+                        <div class="tile @GetLetterScoredCssClass(tile)">
+                            @(tile.CurrentLetter?.ToUpper())                            
+                        </div>
+                    }                    
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<table>
+    <tr>
+        <tr>Round</tr>
+        @foreach (var player in Players)
+        {
+            <th>@player.Name</th>
+        }
+    </tr>
+    @for (var i=0 ; i < Players.Max(p => p.Scores.Count); i++) 
+    {
+        <tr>
+            <td>@(i + 1)</td>
+            @foreach (var player in Players) 
+            {
+                if (player.Scores.Count > i) 
+                {
+                    <td>@player.Scores[i]</td>
+                }
+            }
+        </tr>
+    }
+</table>
+
+@code {
+    protected string GetSelectedCssClass(int i, int j) {
+        var (si, sj) = SelectedIndex;
+        return (si == i && sj == j) ? "board--cell__selected" : "";
+    }
+
+    protected string GetTileTypeCssClass(TileType tileType) {
+        return $"board--cell__{tileType:g}";
+    }
+
+    protected string GetLetterScoredCssClass(Tile tile) {
+        return tile.Scored ? "tile-scored" : "";
+    }
+}

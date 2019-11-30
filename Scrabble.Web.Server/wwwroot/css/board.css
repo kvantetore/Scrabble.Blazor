@@ -1,0 +1,58 @@
+.board {
+    display: grid;
+    grid-template-columns: repeat(15, 3em);
+    grid-template-rows: repeat(15, 3em);
+}
+
+.board:focus {
+    outline: none;
+}
+
+.board--row {
+    display: contents;
+}
+
+.board--cell {
+    border: 1px solid;
+    margin: 1px;
+    display: flex;
+}
+
+.board--cell__Normal {
+
+}
+
+.board--cell__DoubleWord,
+.board--cell__Start {
+    background-color: lightsalmon;
+}
+
+.board--cell__TripleWord {
+    background-color: salmon;
+}
+
+.board--cell__DoubleLetter {
+    background-color: lightblue;  
+}
+
+.board--cell__TripleLetter {
+    background-color: blue;  
+}
+
+:focus .board--cell__selected {
+    outline: 2px solid;
+}
+
+.tile {
+    background-color: burlywood;
+    margin: 2px;
+    flex-grow: 1;
+    border-width: 2px;
+    border-color: burlywood;
+    border-style: outset;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    text-align: center;
+}
