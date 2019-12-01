@@ -4,11 +4,15 @@ namespace Scrabble.Data.Models
 {
     public class ScrabbleContext : DbContext
     {
+        public ScrabbleContext(DbContextOptions<ScrabbleContext> contextOptions) : base(contextOptions)
+        {
+        }
+
         public DbSet<Game> Games { get; set; }
         public DbSet<Player> Players { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options) {
-            options.UseSqlite("Data Source=db/blogging.db");
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

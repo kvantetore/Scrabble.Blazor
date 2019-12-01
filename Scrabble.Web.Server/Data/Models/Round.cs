@@ -9,6 +9,7 @@ namespace Scrabble.Data.Models
         public Game Game { get; set; }
         public Guid GameId { get; set; }
 
+        public int RoundNumber {get;set;}
         public List<PlayerRound> PlayerRounds { get; set; }
     }
 }

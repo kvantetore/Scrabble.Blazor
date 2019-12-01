@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Scrabble.Data.Models;
 using Scrabble.Web.Server.Data;
 
 namespace Scrabble.Web.Server
@@ -28,7 +30,12 @@ namespace Scrabble.Web.Server
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
+
+            services.AddDbContext<ScrabbleContext>(options =>
+            {
+                options.UseSqlite(Configuration.GetConnectionString("Scrabble"));
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
