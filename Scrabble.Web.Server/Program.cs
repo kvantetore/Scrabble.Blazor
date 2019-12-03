@@ -20,6 +20,16 @@ namespace Scrabble.Web.Server
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    var hostingEnvironment = hostingContext.HostingEnvironment;
+                    config
+                        .AddJsonFile("appsettings.json", true, true)
+                        .AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", true, true)
+                        .AddJsonFile("appsettings.local.json", true, true)
+                        .AddEnvironmentVariables()
+                        .AddCommandLine(args ?? new string[] { });
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

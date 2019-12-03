@@ -1,3 +1,4 @@
 wwwroot/dist/
 db/
 node_modules
+*.local.json

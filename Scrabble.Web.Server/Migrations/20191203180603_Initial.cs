@@ -36,7 +36,8 @@ namespace Scrabble.Web.Server.Migrations
                 columns: table => new
                 {
                     RoundId = table.Column<Guid>(nullable: false),
-                    GameId = table.Column<Guid>(nullable: false)
+                    GameId = table.Column<Guid>(nullable: false),
+                    RoundNumber = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -115,7 +116,7 @@ namespace Scrabble.Web.Server.Migrations
                 {
                     table.PrimaryKey("PK_PlayerRoundLetter", x => x.PlayerRoundLetterId);
                     table.ForeignKey(
-                        name: "FK_PlayerRoundLetter_PlayerRound_PlayerRoundRoundId_PlayerRoundPlayerId",
+                        name: "FK_PlayerRoundLetter_PlayerRound_PlayerRoundRoundId_PlayerRoun~",
                         columns: x => new { x.PlayerRoundRoundId, x.PlayerRoundPlayerId },
                         principalTable: "PlayerRound",
                         principalColumns: new[] { "RoundId", "PlayerId" },

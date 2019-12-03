@@ -33,7 +33,8 @@ namespace Scrabble.Web.Server
 
             services.AddDbContext<ScrabbleContext>(options =>
             {
-                options.UseSqlite(Configuration.GetConnectionString("Scrabble"));
+                var connectionString = Configuration.GetConnectionString("Scrabble");
+                options.UseNpgsql(connectionString);
             });
 
         }
