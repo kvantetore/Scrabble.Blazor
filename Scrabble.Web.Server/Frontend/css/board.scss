@@ -58,7 +58,9 @@
 }
 
 .game-area {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
 }
 
 .game-area--board {

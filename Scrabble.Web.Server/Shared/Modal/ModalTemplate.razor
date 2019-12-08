@@ -1,0 +1,17 @@
+@typeparam TModel
+@typeparam TResult
+
+@functions {
+    [Parameter] public RenderFragment<ModalContext> ChildContent { get; set; }
+    [Parameter] public string Class { get; set; }
+
+    [Inject] private ModalService ModalService { get; set; }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (ModalService.IsModalActive(this))
+        {
+            ModalService.ModalStateHasChanged();
+        }
+    }
+}

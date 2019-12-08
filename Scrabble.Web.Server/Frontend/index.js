@@ -1,1 +1,3 @@
-import "./styles.js"
+import "./css/site.scss"
+
+import "./js/ModalContainer.js";

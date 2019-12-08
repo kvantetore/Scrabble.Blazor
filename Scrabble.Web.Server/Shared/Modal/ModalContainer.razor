@@ -1,0 +1,14 @@
+<div class="modal-container @(IsModalActive ? "modal-container--active" : "")">
+    <div class="modal-container__overlay"></div>
+    <div class="modal-container__filler"></div>
+
+    @if (IsModalActive)
+    {
+        foreach (var modal in CurrentModals)
+        {
+            <div class="modal-container__content @(modal.Template?.Class ?? "modal--form")">
+                @modal.ModalBody
+            </div>
+        }
+    }
+</div>

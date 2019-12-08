@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components;
 using Scrabble.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Scrabble.Web.Server.Shared.Modal;
 
-namespace Scrabble.Web.Server.Pages
+namespace Scrabble.Web.Server.Pages.PlayGame
 {
     partial class PlayGame
     {
         [Inject] ScrabbleContext DbContext { get; set; }
+        [Inject] ModalService ModalService { get; set; }
 
         [Parameter] public string ParameterId { get; set; }
 
@@ -21,6 +23,8 @@ namespace Scrabble.Web.Server.Pages
         (int i, int j) LastMovement;
 
         protected IEnumerable<Player> Players => Game.GamePlayers.OrderBy(gp => gp.Order).Select(gp => gp.Player);
+
+        protected bool IsGameEnded => Game?.End != null;
 
         protected IEnumerable<Tile> AllTiles
         {
@@ -71,6 +75,10 @@ namespace Scrabble.Web.Server.Pages
 
         protected async Task OnKeyDown(KeyboardEventArgs args)
         {
+            if (IsGameEnded) {
+                return;
+            }
+
             var (i, j) = SelectedIndex;
             var currentTile = Tiles[SelectedIndex.i, SelectedIndex.j];
 
@@ -98,16 +106,27 @@ namespace Scrabble.Web.Server.Pages
             }
         }
 
-        protected int GetPlayerScore(Player player) 
+        protected int GetPlayerScore(Player player)
         {
             return Game.Rounds.Sum(r => r.PlayerRounds.FirstOrDefault(pr => pr.Player == player)?.Score ?? 0);
         }
 
-        protected Round GetCurrentRound() {
-            return Game.Rounds.OrderByDescending(r => r.RoundNumber).FirstOrDefault();            
+        protected Round GetCurrentRound()
+        {
+            if (IsGameEnded)
+            {
+                return null;
+            }
+            return Game.Rounds.OrderByDescending(r => r.RoundNumber).FirstOrDefault();
         }
 
-        protected Player GetNextPlayer() {
+        protected Player GetNextPlayer()
+        {
+            if (IsGameEnded)
+            {
+                return null;
+            }
+
             var currentRound = GetCurrentRound();
             var players = Players;
 
@@ -117,6 +136,11 @@ namespace Scrabble.Web.Server.Pages
 
         protected async Task ScoreTiles(Player player)
         {
+            if (IsGameEnded)
+            {
+                return;
+            }
+
             var score = GetCurrentScore();
 
             var scoringTiles = AllTiles.Where(t => IsFilled(t) && !t.Scored).ToList();
@@ -152,6 +176,47 @@ namespace Scrabble.Web.Server.Pages
             });
 
             await DbContext.SaveChangesAsync();
+        }
+
+        protected async Task EndGame()
+        {
+            var result = await EndGameModal.ExecuteModalAsync(ModalService, new EndGameModal.Input
+            {
+                Players = Players.ToList()
+            });
+
+            if (result?.EndScores != null)
+            {
+                //create a final round with end scores
+                var currentRound = GetCurrentRound();
+                var endRound = new Round()
+                {
+                    RoundNumber = (currentRound?.RoundNumber ?? 0) + 1,
+                    PlayerRounds = result.EndScores.Select(endScore =>
+                    {
+                        var letters = (endScore.RemainingLetters ?? "")
+                            .Select(c => new PlayerRoundLetter
+                            {
+                                ColIndex = -1,
+                                RowIndex = -1,
+                                Letter = c.ToString()
+                            })
+                            .ToList();
+                        var score = letters.Sum(l => - LetterScore[l.Letter]);
+
+                        return new PlayerRound
+                        {
+                            Player = endScore.Player,
+                            Letters = letters,
+                            Score = score,
+                        };
+                    })
+                    .ToList(),
+                };
+                Game.Rounds.Add(endRound);
+                Game.End = DateTimeOffset.Now;
+                await DbContext.SaveChangesAsync();
+            }
         }
 
         protected int GetCurrentScore()
@@ -293,7 +358,7 @@ namespace Scrabble.Web.Server.Pages
 
         protected bool CanEdit(Tile tile)
         {
-            return !tile.Scored;
+            return !IsGameEnded && !tile.Scored;
         }
 
         protected void MoveCursor((int i, int j) delta)
@@ -376,17 +441,21 @@ namespace Scrabble.Web.Server.Pages
                         .ThenInclude(pr => pr.Letters)
                 .FirstOrDefault(g => g.GameId == gameId);
 
-            foreach (var round in Game.Rounds) {
-                foreach (var playerRound in round.PlayerRounds) {
-                    foreach (var letter in playerRound.Letters) {
-                        var tile = Tiles[letter.RowIndex, letter.ColIndex];
-                        tile.CurrentLetter = letter.Letter;
-                        tile.Scored = true;
+            foreach (var round in Game.Rounds)
+            {
+                foreach (var playerRound in round.PlayerRounds)
+                {
+                    foreach (var letter in playerRound.Letters)
+                    {
+                        if (letter.RowIndex >= 0 && letter.ColIndex >= 0) 
+                        {
+                            var tile = Tiles[letter.RowIndex, letter.ColIndex];
+                            tile.CurrentLetter = letter.Letter;
+                            tile.Scored = true;
+                        }
                     }
                 }
             }
-
-
         }
 
         private void SetTileTypeSymmetric(int i, int j, TileType tileType)

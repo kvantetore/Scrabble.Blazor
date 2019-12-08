@@ -29,54 +29,56 @@
         </div>
 
         <div class="game-area--action">
-            <div>
-                Next player: @(GetNextPlayer()?.Name)
-            </div>
-            <div>
-                Score: @GetCurrentScore()
-            </div>
+            @if (!IsGameEnded) {
+                <div>
+                    Next player: @(GetNextPlayer()?.Name)
+                </div>
+                <div>
+                    Score: @GetCurrentScore()
+                </div>
 
-            <div>
-                Words:
-                <ul>
-                    @foreach (var word in GetCurrentWords())
+                <div>
+                    Words:
+                    <ul>
+                        @foreach (var word in GetCurrentWords())
+                        {
+                            <li>@(string.Join("", word.Select(t => t.CurrentLetter)))</li>
+                        }
+                    </ul>
+
+                </div>
+
+                <div>
+                    @foreach (var player in Players)
                     {
-                        <li>@(string.Join("", word.Select(t => t.CurrentLetter)))</li>
+                        <button type="button" class="btn @(player == GetNextPlayer() ? "btn-primary" : "btn-secondary")" @onclick="@(() => ScoreTiles(player))">Score for @player.Name</button>
                     }
-                </ul>
-
-            </div>
-
-            <div>
-                @foreach (var player in Players)
-                {
-                    <button type="button" @onclick="@(() => ScoreTiles(player))">Score for @player.Name</button>
-                }
-            </div>
+                </div>
+            }
 
             <table class="table">
                 <tr>
                     <td>Round</td>
                     @foreach (var player in Players)
                     {
-                        <th>@player.Name</th>
+                        <th class="text-center">@player.Name</th>
                     }
                 </tr>
                 <tr>
                     <td>Total</td>
                     @foreach (var player in Players)
                     {
-                        <th class="text-right">@GetPlayerScore(player)</th>
+                        <th class="text-center">@GetPlayerScore(player)</th>
                     }
                 </tr>
                 @foreach (var round in Game.Rounds.OrderBy(r => r.RoundNumber))
                 {
                     <tr>
-                        <td>@(round.RoundNumber + 1)</td>
+                        <td>@round.RoundNumber</td>
                         @foreach (var player in Players) 
                         {
                             var playerRound = round.PlayerRounds.FirstOrDefault(pr => pr.Player == player);
-                            <td class="text-right">
+                            <td class="text-center">
                                 <text>@(playerRound?.Score)</text>
                             </td>
                         }
@@ -84,6 +86,15 @@
                 }
             </table>
         </div>
+
+        @if (!IsGameEnded)
+        {
+            <div class="game-area--end-game">
+                <button type="button" class="btn btn-danger" @onclick="@(() => EndGame())">
+                    End game
+                </button>
+            </div>
+        }
     </div>
 }
 

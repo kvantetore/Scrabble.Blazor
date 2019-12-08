@@ -1,11 +1,10 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="sidebar">
-    <NavMenu />
-</div>
-
 <div class="main">
     <div class="top-row px-4">
+        <a class="navbar-brand" href="">Scrabble.Web.Server</a>
+
+        <span class="flex-grow-1"></span>
         <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
     </div>
 
@@ -13,3 +12,5 @@
         @Body
     </div>
 </div>
+
+<Scrabble.Web.Server.Shared.Modal.ModalContainer />

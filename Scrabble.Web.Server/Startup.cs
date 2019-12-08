@@ -1,17 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Scrabble.Data.Models;
-using Scrabble.Web.Server.Data;
+using Scrabble.Web.Server.Shared.Modal;
 
 namespace Scrabble.Web.Server
 {
@@ -37,6 +31,7 @@ namespace Scrabble.Web.Server
                 options.UseNpgsql(connectionString);
             });
 
+            services.AddScoped<ModalService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

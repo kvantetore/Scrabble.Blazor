@@ -4,6 +4,7 @@
     "watch": "parcel watch -d wwwroot/dist --public-url /dist/ --https Frontend/index.js"
   },
   "dependencies": {
+    "bootstrap": "^4.4.1",
     "parcel": "^1.12.4"
   },
   "devDependencies": {

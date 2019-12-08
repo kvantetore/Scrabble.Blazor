@@ -15,7 +15,6 @@ namespace Scrabble.Web.Server.Pages
         protected List<Player> UnselectedPlayers { get; set; }
         protected List<Player> SelectedPlayers { get; set; }
 
-        protected Player SelectedPlayer { get; set; }
         protected string NewPlayerName { get; set; }
 
         protected override async Task OnInitializedAsync()
@@ -27,17 +26,13 @@ namespace Scrabble.Web.Server.Pages
             SelectedPlayers = new List<Player>();
         }
 
-        protected async Task SelectPlayer(ChangeEventArgs args)
+        protected async Task AddPlayer(Player player)
         {
-            var selectedId = Guid.Parse((string)args.Value);
-            SelectedPlayer = UnselectedPlayers.FirstOrDefault(p => p.PlayerId == selectedId);
-        }
-        protected async Task AddSelectedPlayer()
-        {
-            if (SelectedPlayer != null && !SelectedPlayers.Contains(SelectedPlayer))
-            {
-                SelectedPlayers.Add(SelectedPlayer);
+            if (SelectedPlayers.Contains(player)) {
+                return;
             }
+            
+            SelectedPlayers.Add(player);
         }
 
         protected async Task MoveUp(Player player)

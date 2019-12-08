@@ -1,0 +1,26 @@
+@inherits ModalComponentBase<EndGameModal, EndGameModal.Input, EndGameModal.Result>
+
+<h1>End game</h1>
+
+<EditForm Model="this" OnValidSubmit="@(() => Submit())">
+    @if (EndScores != null) 
+    {
+        <p>Enter the ending letters of each player</p>
+        <table class="table">
+            @foreach (var endScore in EndScores) {
+                <tr> 
+                    <td>@endScore.Player.Name</td>
+                    <td>
+                        <input type="text" class="form-control" @bind-value="@endScore.RemainingLetters" />
+                    </td>
+                </tr>    
+            }
+        </table>
+    }
+
+    <div class="modal-buttons">
+        <button type="button" class="btn btn-danger" @onclick="@(() => Cancel())">Cancel</button>
+        <button type="submit" class="btn btn-primary">End game</button>
+    </div>
+</EditForm>
+

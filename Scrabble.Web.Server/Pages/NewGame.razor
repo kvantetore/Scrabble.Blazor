@@ -2,7 +2,29 @@
 
 <h1>New Game</h1>
 
-<h2>Players:</h2>
+<h4 class="mt-2">Select players</h4>
+<div style="display:grid; grid-template-columns: 1fr auto; gap: 0.5rem;">
+    @foreach (var player in UnselectedPlayers)
+    {
+        <div>@player.Name</div>
+        <div>
+            <button type="button" class="btn btn-primary" @onclick="@(() => AddPlayer(player))">
+                <span class="oi oi-plus"></span>
+                Add player
+            </button>
+        </div>
+    }
+
+    <input type="text" class="form-control" @bind-value="@NewPlayerName" />
+
+    <button class="btn btn-primary" @onclick="@(() => NewPlayer(NewPlayerName))">
+        <span class="oi oi-plus"></span>
+        New player
+    </button>
+
+</div>
+
+<h4 class="mt-4">Selected players:</h4>
 @if (SelectedPlayers.Any())
 {
     <table class="table">
@@ -41,31 +63,3 @@ else {
     <div>No selected players</div>
 }
 
-@if (UnselectedPlayers.Any()) 
-{
-    <h2>Add Player</h2>
-    <div style="display:grid; grid-template-columns: 1fr auto">
-        <select class="form-control" @onchange="@((args) => SelectPlayer(args))">
-            <option value="">Select player</option>
-            @foreach (var player in UnselectedPlayers)
-            {
-                <option value="@player.PlayerId.ToString()">@player.Name</option>
-            }
-        </select>
-        
-        <button class="btn btn-primary" @onclick="@(() => AddSelectedPlayer())">
-            <span class="oi oi-plus"></span>
-            Add player
-        </button>
-    </div>
-}
-
-<h2>New Player</h2>
-<div style="display:grid; grid-template-columns: 1fr auto">
-    <input type="text" class="form-control" @bind-value="@NewPlayerName" />
-
-    <button class="btn btn-primary" @onclick="@(() => NewPlayer(NewPlayerName))">
-        <span class="oi oi-plus"></span>
-        New player
-    </button>
-</div>
