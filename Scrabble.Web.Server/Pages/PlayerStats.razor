@@ -1,0 +1,35 @@
+@page "/player-stats"
+<h1>Stats</h1>
+
+<table class="table">
+    <tr>
+        <td></td>
+        <td>Games Played</td>
+        <td>Games Won</td>
+        <td>Total Score</td>
+        <td>Total Penalty</td>
+        <td>Score/Round</td>
+        <td>Score/Letter</td>
+    </tr>
+    @foreach (var stat in Stats) {
+        <tr>
+            <th>@stat.Player.Name</th>
+            <td>@stat.GamesPlayed</td>
+            <td>@stat.GamesWon</td>
+            <td>@(stat.PositiveScore + stat.PenaltyScore)</td>
+            <td>@stat.PenaltyScore</td>
+            <td>@Div(stat.PositiveScore, stat.RoundsPlayed, 2)</td>
+            <td>@Div(stat.ScoreWithLetters, stat.LetterCount, 2)</td>
+        </tr>
+    }
+</table>
+
+@code {
+    decimal? Div(int num, int denom, int decimals) {
+        if (denom == 0) {
+            return null;
+        }
+
+        return Math.Round(num / (decimal)denom, decimals);
+    }
+}

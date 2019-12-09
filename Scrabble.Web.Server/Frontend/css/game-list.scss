@@ -1,0 +1,9 @@
+.game-list--player {
+    &:not(:last-child)::after {
+        content: ', '
+    }
+}
+
+.game-list--player__winner {
+    font-weight: bold;
+}

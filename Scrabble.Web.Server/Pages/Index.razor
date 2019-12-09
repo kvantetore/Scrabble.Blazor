@@ -18,9 +18,26 @@
             @foreach (var game in Games) 
             {
                 <tr>
-                    <td>@game.Start.ToString("dd.MM.yyyy hh:mm")</td>
-                    <td>@(string.Join(", ", game.GamePlayers?.Select(gp => gp.Player.Name) ?? new string[] {}))</td>
-                    <td><a class="btn btn-primary" href="/game/@game.GameId">Continue Game</a></td>
+                    <td>@game.Game.Start.ToString("dd.MM.yyyy hh:mm")</td>
+                    <td>
+                        @foreach (var (player, playerIndex) in game.Players.Select((p, i) => (p, i)))
+                        {
+                            <span class='game-list--player @(player.Winner ? "game-list--player__winner" : "")'>@player.Player.Name (@player.Score)</span>
+                        }
+                    </td>
+                    <td>
+                        @if (game.Game.End == null) {
+                            <a class="btn btn-success" href="/game/@game.Game.GameId">
+                                Continue game
+                            </a>
+                        }
+                        else {
+                            <a class="btn btn-primary" href="/game/@game.Game.GameId">
+                                View game
+                            </a>
+                        }
+                        <button class="btn btn-danger" @onclick="@(() => DeleteGame(game.Game))">Delete game</button>
+                    </td>
                 </tr>
             }
         </table>

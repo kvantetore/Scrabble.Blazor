@@ -1,0 +1,14 @@
+@inherits ModalComponentBase<ConfirmModal, ConfirmModal.Input, ConfirmModal.Result>
+
+<h1>@Model.Title</h1>
+<EditForm Model="Model" OnValidSubmit="@(() => OnOk())">
+
+    <div class="form-group">
+        @Model.Message
+    </div>
+
+    <div class="modal-buttons">
+        <button type="submit" class="btn btn-primary">@Model.OkButtonCaption</button>
+        <button type="button" class="btn btn-danger" @onclick="@(() => OnCancel())">@(Model.CancelButtonCaption)</button>
+    </div>
+</EditForm>
