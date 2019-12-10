@@ -9,7 +9,8 @@
         <td>Total Score</td>
         <td>Total Penalty</td>
         <td>Score/Round</td>
-        <td>Score/Letter</td>
+        <td>Score/Letter*</td>
+        <td>Letters*</td>
     </tr>
     @foreach (var stat in Stats) {
         <tr>
@@ -20,9 +21,14 @@
             <td>@stat.PenaltyScore</td>
             <td>@Div(stat.PositiveScore, stat.RoundsPlayed, 2)</td>
             <td>@Div(stat.ScoreWithLetters, stat.LetterCount, 2)</td>
+            <td>@stat.LetterCount</td>
         </tr>
     }
 </table>
+
+<div>
+    * Stats only calculated for games after December 6th 2019
+</div>
 
 @code {
     decimal? Div(int num, int denom, int decimals) {
