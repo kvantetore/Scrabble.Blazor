@@ -1,13 +1,20 @@
 ﻿@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="main">
     <div class="top-row px-4">
-        <a class="navbar-brand" href="/">Home</a>
-        <a class="navbar-link" href="/player-stats">Stats</a>
-
-        <span class="flex-grow-1"></span>
+        <AuthorizeView>
+            <Authorized>
+                <a class="navbar-brand" href="/">Home</a>
+                <a class="navbar-link" href="/player-stats">Stats</a>
+                <span class="flex-grow-1"></span>
+                <a class="navbar-link" href="/auth/logout">Logout</a>
+            </Authorized>
+            <NotAuthorized>
+                <a class="navbar-link" href="/auth/login">Login</a>
+            </NotAuthorized>
+        </AuthorizeView>
     </div>
-
     <div class="content px-4">
         @Body
     </div>
