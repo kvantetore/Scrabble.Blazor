@@ -4,10 +4,10 @@
 # - yarn
 ###################################################################################################
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/core/sdk:3.1 as builder
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 as builder
 
 # set up environment
-ENV ASPNETCORE_URLS http://+:80 \
+ENV \
     # Enable detection of running in a container
     DOTNET_RUNNING_IN_CONTAINER=true \
     # Enable correct mode for dotnet watch (only mode supported in a container)
@@ -69,7 +69,7 @@ RUN cd ./Scrabble.Web.Server \
 # Setup rutime image with build output
 ###################################################################################################
 
-FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/core/aspnet:3.1.0-buster-slim-arm32v7
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app
 COPY --from=builder /source/Scrabble.Web.Server/publish .
 ENTRYPOINT ["dotnet", "Scrabble.Web.Server.dll"]
