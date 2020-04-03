@@ -229,6 +229,14 @@ namespace Scrabble.Web.Server.Pages.PlayGame
                 score += GetWordScore(word);
             }
 
+            //bonus score for all characters
+            var scoringTiles = AllTiles.Where(t => IsFilled(t) && !t.Scored);
+            if (scoringTiles.Count() == 7) 
+            {
+                score += 50;
+            }
+
+
             return score;
         }
 
@@ -286,16 +294,12 @@ namespace Scrabble.Web.Server.Pages.PlayGame
             var delta = wordDir == WordDirection.Horizontal ? (0, 1) : (1, 0);
 
             //find start
-            Console.WriteLine($"Finding start of word at {tile.Position}");
             var pos = tile.Position;
             do
             {
-                Console.WriteLine($"{pos}: {Tiles[pos.i, pos.j].CurrentLetter}");
                 pos = Subtract(pos, delta);
             } while (IsInsideBoard(pos) && IsFilled(Tiles[pos.i, pos.j]));
             pos = Add(pos, delta);
-
-            Console.WriteLine($"Found start of word at {pos}");
 
             // add letters until end
             var word = new List<Tile>();
@@ -310,8 +314,6 @@ namespace Scrabble.Web.Server.Pages.PlayGame
             {
                 return null;
             }
-
-            Console.WriteLine($"Found word {string.Join("", word.Select(l => l.CurrentLetter))}");
 
             return word;
         }
