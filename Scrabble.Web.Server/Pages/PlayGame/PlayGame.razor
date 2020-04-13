@@ -54,6 +54,8 @@
                     {
                         <button type="button" class="btn @(player == GetNextPlayer() ? "btn-primary" : "btn-secondary")" @onclick="@(() => ScoreTiles(player))">Score for @player.Name</button>
                     }
+
+                    <button type="button" class="btn btn-danger" @onclick="@(() => Undo())" disabled="@(!CanUndo())">Undo</button>
                 </div>
             }
 

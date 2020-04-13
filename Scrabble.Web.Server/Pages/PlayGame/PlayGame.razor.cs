@@ -79,7 +79,6 @@ namespace Scrabble.Web.Server.Pages.PlayGame
                 return;
             }
 
-            var (i, j) = SelectedIndex;
             var currentTile = Tiles[SelectedIndex.i, SelectedIndex.j];
 
             switch (args.Code)
@@ -104,6 +103,67 @@ namespace Scrabble.Web.Server.Pages.PlayGame
                     MoveCursor(Subtract((0, 0), Normalize(LastMovement)));
                 }
             }
+        }
+
+        protected bool CanUndo() 
+        {
+            if (IsGameEnded) 
+            {
+                return false;
+            }
+
+            var currentRound = GetCurrentRound();
+            if (currentRound == null) 
+            {
+                return false;
+            }
+
+            if (currentRound.RoundNumber > 1) {
+                return true;
+            }
+
+            return currentRound.PlayerRounds.Any();
+        }
+
+        protected async Task Undo()
+        {
+            if (!CanUndo())
+            {
+                return;
+            }
+
+            var currentRound = GetCurrentRound();
+
+            // if we don't have any scores in this round yet, remove the round and and use the previous round
+            if (!currentRound.PlayerRounds.Any())
+            {
+                Game.Rounds.Remove(currentRound);
+                DbContext.Set<Round>().Remove(currentRound);
+
+                currentRound = GetCurrentRound();
+            }
+
+            // find the last player round 
+            var players = Players.ToList();
+            var previousPlayer = players
+                .Select(p => new
+                {
+                    Player = p,
+                    PlayerRound = currentRound.PlayerRounds.FirstOrDefault(pr => pr.Player == p),
+                })
+                .Where(x => x.PlayerRound != null)
+                .LastOrDefault();
+
+            //remove player round
+            if (previousPlayer != null)
+            {
+                DbContext.Set<PlayerRound>().Remove(previousPlayer.PlayerRound);
+            }
+
+            await DbContext.SaveChangesAsync();
+
+            ResetBoard();
+            LoadGame();
         }
 
         protected int GetPlayerScore(Player player)
@@ -396,6 +456,12 @@ namespace Scrabble.Web.Server.Pages.PlayGame
 
         protected override async Task OnInitializedAsync()
         {
+            ResetBoard();
+            LoadGame();
+        }
+
+        private void ResetBoard()
+        {
             for (var i = 0; i < Tiles.GetLength(0); i++)
             {
                 for (var j = 0; j < Tiles.GetLength(1); j++)
@@ -429,8 +495,10 @@ namespace Scrabble.Web.Server.Pages.PlayGame
             SetTileTypeSymmetric(5, 1, TileType.TripleLetter);
             SetTileTypeSymmetric(6, 2, TileType.DoubleLetter);
             SetTileTypeSymmetric(3, 7, TileType.DoubleLetter);
+        }
 
-
+        private void LoadGame()
+        {
             var gameId = Guid.Parse(ParameterId);
             Game = DbContext.Games
                 .Include(g => g.GamePlayers)
